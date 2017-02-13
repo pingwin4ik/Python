@@ -1,44 +1,102 @@
-class Employee:
-    def __init__(self, fname, sname, salary, exper):
-        self.fname = fname
-        self.sname = sname
+class NotEmployeeException:
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return " there is not Employee in manager's team " + str(self.value)
+
+class WrongEmployeeRoleError:
+    def __str__(self):
+        return "Employee {} has unexpected role! ".format(self.second_name)
+
+
+class SalaryGivingError(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return " there is not Employee in manager's team " + str(self.value)
+
+class Employee(object):
+    def __init__(self, first_name, second_name, salary, experience):
+        self.first_name = first_name
+        self.second_name = second_name
         self.salary = salary
-        self.exper = exper
+        self.experience = experience
 
-    def showempl(self):
-        print("fName :", self.fname, "sName :", self.sname, "salary :", self.salary, "exper :", self.exper)
+    def __str__(self):
+        return "{} {}, experience: {},".format(self.first_name,
+                                               self.second_name,
+                                               self.experience)
+
+    def get_salary(self):
+        if 2 < self.experience <= 5:
+            self.salary += 200
+        elif self.experience > 5:
+            self.salary = self.salary * 1.2 + 500
+        return self.salary
 
 
-class Develop(Employee):
+class Developer(Employee):
+    pass
+
+
+class Designer(Employee):
+    def __init__(self, eff_coeff, *args):
+        self.eff_coeff = eff_coeff
+        super(Designer, self).__init__(*args)
+
+    def get_salary(self):
+        Employee.get_salary(self)
+        self.salary *= self.eff_coeff
+        return self.salary
+
+
+class Manager(Employee):
+    def __init__(self, first_name, second_name, salary, experience, team = []):
+        """
+        :type team: list if Developers or Designers
+        """
+        self.team = team
+        super(Manager, self).__init__(first_name, second_name, salary, experience)
+
+    def get_salary(self):
+        Employee.get_salary(self)
+        team_counter = len(self.team)
+        if 5 < team_counter <= 10:
+            self.salary += 200
+        elif team_counter >= 10:
+            self.salary += 300
+        dev_counter = 0
+        for employee in self.team:
+            if isinstance(employee, Developer):
+                dev_counter += 1
+        print dev_counter
+        if dev_counter > team_counter % 2:
+            self.salary *= 1.1
+        return self.salary
+
+    def add_to_team(self, employee):
+        if self.team == []:
+            raise NotEmployeeException
+        elif isinstance(employee, Manager):
+            raise WrongEmployeeRoleError
+        else:
+            self.team.append(employee)
+
+
+class Department(object):
     def __init__(self, manager):
         self.manager = manager
 
+    def give_salary(self):
+        if self.manager.team:
+            for employee in self.manager.team:
+                print "{} {}: got salary: {}".format(employee.first_name,
+                                                     employee.second_name,
+                                                     employee.salary)
+        else:
+            raise SalaryGivingError
 
-    def showDev(self):
-        return "fName :" + self.fname + "sName :" + self.sname + "salary :" + self.salary + "exper :" + self.exper + "manager :" + self.manager
-
-
-class Designers(Develop):
-    def __init__(self, effectivness):
-        self.effectivness = effectivness
-
-    def showDesign(self):
-        return "fName :" + self.fname + "sName :" + self.sname + "salary :" + self.salary + "exper :" + self.exper + "manager :" + self.manager + "effect" + self.effectivness
-
-
-class Manager(Designers):
-    def __str__(self):
-        pass
-       # return "fName :" + self.fname + "sName :" +self.sname + "salary :" + self.salary + "exper :" + self.exper + "manager :" + self.manager + "effect" + self.effectivness
-
-    usrEmpl = Employee(["Empl1", "Empl1", 100, 1], ["Empl2", "Empl2", 200, 2], ["Empl3", "Empl3", 300, 3])
-#usrEmpl1 = Employee("Empl1", "Empl1", 100, 1)
-#usrEmpl2 = Employee("Empl2", "Empl2", 200, 2)
-#usrEmpl3 = Employee("Empl3", "Empl3", 300, 3)
-#usrEmpl4 = Employee("Empl4", "Empl4", 400, 4)
-
-    usrEmpl.showempl()
-#usrEmpl1.showempl()
-#usrEmpl2.showempl()
-#usrEmpl3.showempl()
-#usrEmpl4.showempl()
+    def add_team_members(self,employee=[]):
+        self.manager.add_to_team(employee)

@@ -2,7 +2,7 @@ import random
 
 inclusive_range = (1, 20)
 
-print("Guess my target number that is between %i and %i (inclusive).\n"
+print("Guess  number that is between %i and %i .\n"
       % inclusive_range)
 target = random.randint(*inclusive_range)
 answer, i = None, 0

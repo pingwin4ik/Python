@@ -1,6 +1,6 @@
 
 
-n=int(input('please enter the no. in decimal format: '))
+n=int(input('Enter number in decimal format: '))
 x=n
 k=[]
 while (n>0):
