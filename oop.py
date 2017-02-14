@@ -100,3 +100,10 @@ class Department(object):
 
     def add_team_members(self,employee=[]):
         self.manager.add_to_team(employee)
+
+
+new_user = Developer("serg" , "kucherenko" , 300, 8)
+print new_user
+new_user.get_salary()
+print new_user.get_salary()
+#print new_user.first_name
